@@ -1,0 +1,10 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '--build-arg', 'NEXT_PUBLIC_API_URL=https://backend-953543768194.us-central1.run.app/api/v1',
+    '-t', 'us-central1-docker.pkg.dev/footprintiq-499716/footprintiq/frontend:latest',
+    '.'
+  ]
+images:
+- 'us-central1-docker.pkg.dev/footprintiq-499716/footprintiq/frontend:latest'
