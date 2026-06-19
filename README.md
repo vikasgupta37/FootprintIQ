@@ -1,10 +1,6 @@
 # 🌍 FootprintIQ — Smarter Choices. Smaller Footprints.
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![GCP Cloud Run](https://img.shields.io/badge/GCP_Cloud_Run-Deployed-4285F4?style=for-the-badge&logo=google-cloud)](https://cloud.google.com/run)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
-[![Claude 3.5](https://img.shields.io/badge/AI-Claude_3.5_Sonnet-D97706?style=for-the-badge&logo=anthropic)](https://www.anthropic.com/)
+[![DEMO - LIVE NOW](https://img.shields.io/badge/DEMO-LIVE_NOW-FF6B35?style=for-the-badge&logo=google-cloud&logoColor=white&labelColor=4E4E4E)](https://frontend-953543768194.us-central1.run.app) &nbsp; [![PROJECT - REPOSITORY](https://img.shields.io/badge/PROJECT-REPOSITORY-84BD00?style=for-the-badge&logo=github&logoColor=white&labelColor=4E4E4E)](https://github.com/vikasgupta37/FootprintIQ)
 
 **FootprintIQ** is an AI-powered sustainability platform that transforms carbon footprint awareness into actionable change through personalized coaching, predictive modeling, and gamified engagement.
 
