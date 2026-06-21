@@ -9,6 +9,8 @@ from typing import Optional, Tuple
 from jose import JWTError, jwt
 import bcrypt
 
+from app.core.config import settings
+
 # ── Password Hashing ────────────────────────────────────────────
 
 def hash_password(password: str) -> str:
