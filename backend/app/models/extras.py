@@ -47,8 +47,8 @@ class EcoTwinState(Base):
 
     is_baseline = Column(Boolean, default=False)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
 class EcoTwinSimulation(Base):
@@ -77,7 +77,7 @@ class EcoTwinSimulation(Base):
     ai_model = Column(String(50), default="claude-opus-4.5")
     simulation_time_ms = Column(Integer, nullable=True)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 
 # ── Learning Content ─────────────────────────────────────────────
@@ -112,8 +112,8 @@ class LearningContent(Base):
 
     author_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
 class Quiz(Base):
@@ -131,8 +131,8 @@ class Quiz(Base):
     attempt_count = Column(Integer, default=0)
     average_score = Column(Numeric(5, 2), nullable=True)
     is_published = Column(Boolean, default=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
 class QuizAttempt(Base):
@@ -147,7 +147,7 @@ class QuizAttempt(Base):
     passed = Column(Boolean, nullable=True)
     answers = Column(JSONB, nullable=False)
     time_taken_seconds = Column(Integer, nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 
 # ── Analytics ────────────────────────────────────────────────────
@@ -178,7 +178,7 @@ class UserAnalytics(Base):
     recommendations_accepted = Column(Integer, default=0)
     recommendations_completed = Column(Integer, default=0)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 
 class SustainabilityReport(Base):
@@ -201,7 +201,7 @@ class SustainabilityReport(Base):
     
     ai_sustainability_score = Column(Integer, nullable=True) # 0-100
     
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 # ── Audit Logs ───────────────────────────────────────────────────
 
@@ -219,4 +219,4 @@ class AuditLog(Base):
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(Text, nullable=True)
     status = Column(String(20), default="success")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

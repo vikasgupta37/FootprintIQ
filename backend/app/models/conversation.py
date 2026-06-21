@@ -42,8 +42,8 @@ class Conversation(Base):
     total_tokens_used = Column(Integer, default=0)
     total_cost = Column(Integer, default=0)  # in microcents
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     user = relationship("User", back_populates="conversations")
@@ -75,7 +75,7 @@ class Message(Base):
     # Metadata
     metadata_ = Column("metadata", JSONB, default=dict)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     conversation = relationship("Conversation", back_populates="messages")

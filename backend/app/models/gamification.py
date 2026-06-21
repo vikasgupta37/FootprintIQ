@@ -41,7 +41,7 @@ class Badge(Base):
     points_awarded = Column(Integer, default=50)
 
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 
 class UserAchievement(Base):
@@ -51,11 +51,11 @@ class UserAchievement(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     badge_id = Column(UUID(as_uuid=True), ForeignKey("badges.id"), nullable=False, index=True)
 
-    unlocked_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    unlocked_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     progress = Column(Integer, default=100)  # percentage
     notified = Column(Boolean, default=False)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     user = relationship("User", back_populates="achievements")
@@ -93,8 +93,8 @@ class Challenge(Base):
     completion_rate = Column(Numeric(5, 2), default=0)
 
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
 class UserChallenge(Base):
@@ -110,14 +110,14 @@ class UserChallenge(Base):
     progress_percentage = Column(Integer, default=0)
 
     # Dates
-    started_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    started_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
     # Rewards
     points_earned = Column(Integer, default=0)
     badge_earned = Column(Boolean, default=False)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     challenge = relationship("Challenge")
@@ -144,5 +144,5 @@ class Leaderboard(Base):
     total_participants = Column(Integer, nullable=True)
     percentile = Column(Numeric(5, 2), nullable=True)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

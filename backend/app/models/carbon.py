@@ -62,8 +62,8 @@ class CarbonFootprint(Base):
     calculation_time_ms = Column(Integer, nullable=True)
     is_complete = Column(Boolean, default=True)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     user = relationship("User", back_populates="carbon_footprints")
@@ -88,7 +88,7 @@ class CarbonCategory(Base):
     # Sub-category inputs
     input_data = Column(JSONB, default=dict)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     footprint = relationship("CarbonFootprint", back_populates="categories")

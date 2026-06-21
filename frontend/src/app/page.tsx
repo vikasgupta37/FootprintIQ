@@ -46,6 +46,13 @@ const stats = [
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-surface-900 text-white overflow-hidden">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-500 text-white px-4 py-2 rounded-xl z-50 text-sm font-semibold"
+      >
+        Skip to content
+      </a>
+
       {/* Nav */}
       <nav className="fixed top-0 w-full z-50 glass border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -66,7 +73,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-32 pb-20 px-6">
+      <section id="main-content" className="relative pt-32 pb-20 px-6">
         <div className="absolute inset-0 bg-hero-glow" />
         <div className="absolute top-20 left-1/4 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl animate-pulse-soft" />
         <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl animate-float" />

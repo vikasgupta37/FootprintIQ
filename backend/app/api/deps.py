@@ -35,6 +35,16 @@ async def get_current_user(
     if not token:
         raise AuthenticationException("Not authenticated")
 
+    # Check if token is blacklisted in Redis (e.g. from logout)
+    try:
+        is_blacklisted = await cache.exists(f"blacklist:{token}")
+        if is_blacklisted:
+            raise AuthenticationException("Token has been invalidated (logged out)")
+    except Exception as e:
+        # Fallback gracefully if Redis is unavailable
+        from app.core.logging import logger
+        logger.warning("Cache lookup for token blacklist failed: %s", e)
+
     payload = verify_access_token(token)
     if payload is None:
         raise AuthenticationException("Invalid or expired token")
@@ -47,10 +57,13 @@ async def get_current_user(
     cache_key = cache.user_profile_key(user_id)
     cached_user = await cache.get(cache_key)
     if cached_user and isinstance(cached_user, dict):
-        # Still verify the user exists via DB for security, but
-        # use a lightweight existence check
-        result = await db.execute(select(User).where(User.id == UUID(user_id)))
-        user = result.scalar_one_or_none()
+        user = User(
+            id=UUID(cached_user["id"]),
+            email=cached_user["email"],
+            role=cached_user["role"],
+            full_name=cached_user.get("full_name", ""),
+            is_active=cached_user.get("is_active", True),
+        )
     else:
         result = await db.execute(select(User).where(User.id == UUID(user_id)))
         user = result.scalar_one_or_none()
@@ -58,7 +71,13 @@ async def get_current_user(
             # Populate cache for subsequent requests
             await cache.set(
                 cache_key,
-                {"id": str(user.id), "email": user.email, "role": user.role},
+                {
+                    "id": str(user.id),
+                    "email": user.email,
+                    "role": user.role,
+                    "full_name": user.full_name,
+                    "is_active": user.is_active,
+                },
                 ttl=300,
             )
 

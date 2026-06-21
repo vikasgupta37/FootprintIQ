@@ -64,8 +64,8 @@ class User(Base):
 
     # Timestamps
     last_login = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     carbon_footprints = relationship("CarbonFootprint", back_populates="user", cascade="all, delete-orphan")

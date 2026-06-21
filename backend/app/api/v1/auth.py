@@ -1,9 +1,9 @@
-"""Auth API — register, login, OAuth, refresh, logout."""
-
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
+from app.api.deps import get_db, oauth2_scheme
+from app.core.cache import cache
+from app.core.security import verify_access_token
 from app.schemas.schemas import (
     GoogleOAuthRequest,
     RefreshTokenRequest,
@@ -54,5 +54,19 @@ async def refresh_token(data: RefreshTokenRequest, db: AsyncSession = Depends(ge
 
 
 @router.post("/logout")
-async def logout():
+async def logout(token: str = Depends(oauth2_scheme)):
+    if token:
+        try:
+            payload = verify_access_token(token)
+            if payload:
+                exp = payload.get("exp")
+                if exp:
+                    from datetime import datetime, timezone
+                    now = datetime.now(timezone.utc).timestamp()
+                    ttl = int(exp - now)
+                    if ttl > 0:
+                        await cache.set(f"blacklist:{token}", "1", ttl=ttl)
+        except Exception:
+            # Fallback gracefully if cache operations fail
+            pass
     return {"message": "Logged out successfully"}

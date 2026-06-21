@@ -148,14 +148,28 @@ class EcoTwinService:
 
         calc_time = int((time.time() - start_time) * 1000)
 
-        # Save simulation
-        state = EcoTwinState(
-            user_id=user_id,
-            state_name="baseline",
-            carbon_footprint_snapshot=breakdown,
-            is_baseline=True,
+        # Check if baseline state already exists for this user
+        result_state = await self.db.execute(
+            select(EcoTwinState)
+            .where(
+                EcoTwinState.user_id == user_id,
+                EcoTwinState.is_baseline == True
+            )
+            .limit(1)
         )
-        self.db.add(state)
+        state = result_state.scalar_one_or_none()
+
+        if state:
+            state.carbon_footprint_snapshot = breakdown
+        else:
+            state = EcoTwinState(
+                user_id=user_id,
+                state_name="baseline",
+                carbon_footprint_snapshot=breakdown,
+                is_baseline=True,
+            )
+            self.db.add(state)
+            
         await self.db.flush()
 
         simulation = EcoTwinSimulation(

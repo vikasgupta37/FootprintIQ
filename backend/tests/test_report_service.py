@@ -11,6 +11,7 @@ from app.services.report_service import report_service
 async def test_generate_weekly_report_no_footprints():
     # If no footprints exist, it should return None
     db_mock = AsyncMock()
+    db_mock.add = MagicMock()
     result_mock = MagicMock()
     result_mock.scalars().all.return_value = []
     db_mock.execute.return_value = result_mock
@@ -23,6 +24,7 @@ async def test_generate_weekly_report_no_footprints():
 @patch("app.services.report_service.get_anthropic_client")
 async def test_generate_weekly_report_success(mock_get_client):
     db_mock = AsyncMock()
+    db_mock.add = MagicMock()
     
     # Mock footprints
     fp1 = CarbonFootprint(
@@ -69,6 +71,7 @@ async def test_generate_weekly_report_success(mock_get_client):
 @pytest.mark.anyio
 async def test_get_user_reports():
     db_mock = AsyncMock()
+    db_mock.add = MagicMock()
     user_id = uuid.uuid4()
     
     mock_report = SustainabilityReport(

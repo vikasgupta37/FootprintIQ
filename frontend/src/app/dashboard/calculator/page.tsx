@@ -156,8 +156,8 @@ export default function CalculatorPage() {
         {step === 0 && (
           <>
             <div>
-              <label className="block text-sm font-medium mb-2">Vehicle Type</label>
-              <select value={formData.transportation.vehicle_type} onChange={(e) => updateField('transportation', 'vehicle_type', e.target.value)} className="input-field">
+              <label htmlFor="vehicle-type" className="block text-sm font-medium mb-2">Vehicle Type</label>
+              <select id="vehicle-type" value={formData.transportation.vehicle_type} onChange={(e) => updateField('transportation', 'vehicle_type', e.target.value)} className="input-field">
                 <option value="car_petrol">Petrol Car</option>
                 <option value="car_diesel">Diesel Car</option>
                 <option value="car_hybrid">Hybrid Car</option>
@@ -166,21 +166,21 @@ export default function CalculatorPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Kilometers per month: {formData.transportation.km_per_month}</label>
-              <input type="range" min="0" max="5000" value={formData.transportation.km_per_month} onChange={(e) => updateField('transportation', 'km_per_month', +e.target.value)} className="w-full accent-brand-500" />
+              <label htmlFor="km-per-month" className="block text-sm font-medium mb-2">Kilometers per month: {formData.transportation.km_per_month}</label>
+              <input id="km-per-month" type="range" min="0" max="5000" value={formData.transportation.km_per_month} onChange={(e) => updateField('transportation', 'km_per_month', +e.target.value)} className="w-full accent-brand-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Public transport km/month: {formData.transportation.public_transport_km}</label>
-              <input type="range" min="0" max="2000" value={formData.transportation.public_transport_km} onChange={(e) => updateField('transportation', 'public_transport_km', +e.target.value)} className="w-full accent-brand-500" />
+              <label htmlFor="public-transport-km" className="block text-sm font-medium mb-2">Public transport km/month: {formData.transportation.public_transport_km}</label>
+              <input id="public-transport-km" type="range" min="0" max="2000" value={formData.transportation.public_transport_km} onChange={(e) => updateField('transportation', 'public_transport_km', +e.target.value)} className="w-full accent-brand-500" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Short-haul flights/year</label>
-                <input type="number" min="0" value={formData.transportation.flights_short_haul} onChange={(e) => updateField('transportation', 'flights_short_haul', +e.target.value)} className="input-field" />
+                <label htmlFor="flights-short-haul" className="block text-sm font-medium mb-2">Short-haul flights/year</label>
+                <input id="flights-short-haul" type="number" min="0" value={formData.transportation.flights_short_haul} onChange={(e) => updateField('transportation', 'flights_short_haul', +e.target.value)} className="input-field" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Long-haul flights/year</label>
-                <input type="number" min="0" value={formData.transportation.flights_long_haul} onChange={(e) => updateField('transportation', 'flights_long_haul', +e.target.value)} className="input-field" />
+                <label htmlFor="flights-long-haul" className="block text-sm font-medium mb-2">Long-haul flights/year</label>
+                <input id="flights-long-haul" type="number" min="0" value={formData.transportation.flights_long_haul} onChange={(e) => updateField('transportation', 'flights_long_haul', +e.target.value)} className="input-field" />
               </div>
             </div>
           </>
@@ -188,16 +188,16 @@ export default function CalculatorPage() {
         {step === 1 && (
           <>
             <div>
-              <label className="block text-sm font-medium mb-2">Electricity (kWh/month): {formData.energy.electricity_kwh_per_month}</label>
-              <input type="range" min="50" max="2000" value={formData.energy.electricity_kwh_per_month} onChange={(e) => updateField('energy', 'electricity_kwh_per_month', +e.target.value)} className="w-full accent-amber-500" />
+              <label htmlFor="electricity-kwh" className="block text-sm font-medium mb-2">Electricity (kWh/month): {formData.energy.electricity_kwh_per_month}</label>
+              <input id="electricity-kwh" type="range" min="50" max="2000" value={formData.energy.electricity_kwh_per_month} onChange={(e) => updateField('energy', 'electricity_kwh_per_month', +e.target.value)} className="w-full accent-amber-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Renewable %: {formData.energy.renewable_percentage}%</label>
-              <input type="range" min="0" max="100" value={formData.energy.renewable_percentage} onChange={(e) => updateField('energy', 'renewable_percentage', +e.target.value)} className="w-full accent-brand-500" />
+              <label htmlFor="renewable-pct" className="block text-sm font-medium mb-2">Renewable %: {formData.energy.renewable_percentage}%</label>
+              <input id="renewable-pct" type="range" min="0" max="100" value={formData.energy.renewable_percentage} onChange={(e) => updateField('energy', 'renewable_percentage', +e.target.value)} className="w-full accent-brand-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Heating Type</label>
-              <select value={formData.energy.heating_type} onChange={(e) => updateField('energy', 'heating_type', e.target.value)} className="input-field">
+              <label htmlFor="heating-type" className="block text-sm font-medium mb-2">Heating Type</label>
+              <select id="heating-type" value={formData.energy.heating_type} onChange={(e) => updateField('energy', 'heating_type', e.target.value)} className="input-field">
                 <option value="electric">Electric</option>
                 <option value="gas">Natural Gas</option>
                 <option value="oil">Oil</option>
@@ -205,16 +205,16 @@ export default function CalculatorPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">AC usage hours/day: {formData.energy.ac_usage_hours}</label>
-              <input type="range" min="0" max="24" value={formData.energy.ac_usage_hours} onChange={(e) => updateField('energy', 'ac_usage_hours', +e.target.value)} className="w-full accent-amber-500" />
+              <label htmlFor="ac-usage" className="block text-sm font-medium mb-2">AC usage hours/day: {formData.energy.ac_usage_hours}</label>
+              <input id="ac-usage" type="range" min="0" max="24" value={formData.energy.ac_usage_hours} onChange={(e) => updateField('energy', 'ac_usage_hours', +e.target.value)} className="w-full accent-amber-500" />
             </div>
           </>
         )}
         {step === 2 && (
           <>
             <div>
-              <label className="block text-sm font-medium mb-2">Diet Type</label>
-              <select value={formData.food.diet_type} onChange={(e) => updateField('food', 'diet_type', e.target.value)} className="input-field">
+              <label htmlFor="diet-type" className="block text-sm font-medium mb-2">Diet Type</label>
+              <select id="diet-type" value={formData.food.diet_type} onChange={(e) => updateField('food', 'diet_type', e.target.value)} className="input-field">
                 <option value="vegan">Vegan</option>
                 <option value="vegetarian">Vegetarian</option>
                 <option value="pescatarian">Pescatarian</option>
@@ -223,8 +223,8 @@ export default function CalculatorPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Dairy Consumption</label>
-              <select value={formData.food.dairy_consumption} onChange={(e) => updateField('food', 'dairy_consumption', e.target.value)} className="input-field">
+              <label htmlFor="dairy-consumption" className="block text-sm font-medium mb-2">Dairy Consumption</label>
+              <select id="dairy-consumption" value={formData.food.dairy_consumption} onChange={(e) => updateField('food', 'dairy_consumption', e.target.value)} className="input-field">
                 <option value="none">None</option>
                 <option value="low">Low</option>
                 <option value="moderate">Moderate</option>
@@ -232,40 +232,40 @@ export default function CalculatorPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Food Waste: {formData.food.food_waste_pct}%</label>
-              <input type="range" min="0" max="50" value={formData.food.food_waste_pct} onChange={(e) => updateField('food', 'food_waste_pct', +e.target.value)} className="w-full accent-green-500" />
+              <label htmlFor="food-waste" className="block text-sm font-medium mb-2">Food Waste: {formData.food.food_waste_pct}%</label>
+              <input id="food-waste" type="range" min="0" max="50" value={formData.food.food_waste_pct} onChange={(e) => updateField('food', 'food_waste_pct', +e.target.value)} className="w-full accent-green-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Local Produce: {formData.food.local_produce_pct}%</label>
-              <input type="range" min="0" max="100" value={formData.food.local_produce_pct} onChange={(e) => updateField('food', 'local_produce_pct', +e.target.value)} className="w-full accent-green-500" />
+              <label htmlFor="local-produce" className="block text-sm font-medium mb-2">Local Produce: {formData.food.local_produce_pct}%</label>
+              <input id="local-produce" type="range" min="0" max="100" value={formData.food.local_produce_pct} onChange={(e) => updateField('food', 'local_produce_pct', +e.target.value)} className="w-full accent-green-500" />
             </div>
           </>
         )}
         {step === 3 && (
           <>
             <div>
-              <label className="block text-sm font-medium mb-2">Clothing items/month: {formData.shopping.clothing_items_per_month}</label>
-              <input type="range" min="0" max="20" value={formData.shopping.clothing_items_per_month} onChange={(e) => updateField('shopping', 'clothing_items_per_month', +e.target.value)} className="w-full accent-purple-500" />
+              <label htmlFor="clothing-items" className="block text-sm font-medium mb-2">Clothing items/month: {formData.shopping.clothing_items_per_month}</label>
+              <input id="clothing-items" type="range" min="0" max="20" value={formData.shopping.clothing_items_per_month} onChange={(e) => updateField('shopping', 'clothing_items_per_month', +e.target.value)} className="w-full accent-purple-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Electronics/year: {formData.shopping.electronics_per_year}</label>
-              <input type="range" min="0" max="20" value={formData.shopping.electronics_per_year} onChange={(e) => updateField('shopping', 'electronics_per_year', +e.target.value)} className="w-full accent-purple-500" />
+              <label htmlFor="electronics" className="block text-sm font-medium mb-2">Electronics/year: {formData.shopping.electronics_per_year}</label>
+              <input id="electronics" type="range" min="0" max="20" value={formData.shopping.electronics_per_year} onChange={(e) => updateField('shopping', 'electronics_per_year', +e.target.value)} className="w-full accent-purple-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Online deliveries/month: {formData.shopping.online_deliveries_per_month}</label>
-              <input type="range" min="0" max="30" value={formData.shopping.online_deliveries_per_month} onChange={(e) => updateField('shopping', 'online_deliveries_per_month', +e.target.value)} className="w-full accent-purple-500" />
+              <label htmlFor="online-deliveries" className="block text-sm font-medium mb-2">Online deliveries/month: {formData.shopping.online_deliveries_per_month}</label>
+              <input id="online-deliveries" type="range" min="0" max="30" value={formData.shopping.online_deliveries_per_month} onChange={(e) => updateField('shopping', 'online_deliveries_per_month', +e.target.value)} className="w-full accent-purple-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Second-hand %: {formData.shopping.second_hand_pct}%</label>
-              <input type="range" min="0" max="100" value={formData.shopping.second_hand_pct} onChange={(e) => updateField('shopping', 'second_hand_pct', +e.target.value)} className="w-full accent-brand-500" />
+              <label htmlFor="second-hand-pct" className="block text-sm font-medium mb-2">Second-hand %: {formData.shopping.second_hand_pct}%</label>
+              <input id="second-hand-pct" type="range" min="0" max="100" value={formData.shopping.second_hand_pct} onChange={(e) => updateField('shopping', 'second_hand_pct', +e.target.value)} className="w-full accent-brand-500" />
             </div>
           </>
         )}
         {step === 4 && (
           <>
             <div>
-              <label className="block text-sm font-medium mb-2">Recycling Frequency</label>
-              <select value={formData.waste.recycling_frequency} onChange={(e) => updateField('waste', 'recycling_frequency', e.target.value)} className="input-field">
+              <label htmlFor="recycling-frequency" className="block text-sm font-medium mb-2">Recycling Frequency</label>
+              <select id="recycling-frequency" value={formData.waste.recycling_frequency} onChange={(e) => updateField('waste', 'recycling_frequency', e.target.value)} className="input-field">
                 <option value="never">Never</option>
                 <option value="sometimes">Sometimes</option>
                 <option value="often">Often</option>
@@ -273,20 +273,20 @@ export default function CalculatorPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Plastic Usage</label>
-              <select value={formData.waste.plastic_usage} onChange={(e) => updateField('waste', 'plastic_usage', e.target.value)} className="input-field">
+              <label htmlFor="plastic-usage" className="block text-sm font-medium mb-2">Plastic Usage</label>
+              <select id="plastic-usage" value={formData.waste.plastic_usage} onChange={(e) => updateField('waste', 'plastic_usage', e.target.value)} className="input-field">
                 <option value="low">Low</option>
                 <option value="moderate">Moderate</option>
                 <option value="high">High</option>
               </select>
             </div>
             <div className="flex items-center gap-3">
-              <input type="checkbox" checked={formData.waste.composting} onChange={(e) => updateField('waste', 'composting', e.target.checked)} className="accent-brand-500 w-4 h-4" />
-              <label className="text-sm">I compost food waste</label>
+              <input id="composting" type="checkbox" checked={formData.waste.composting} onChange={(e) => updateField('waste', 'composting', e.target.checked)} className="accent-brand-500 w-4 h-4" />
+              <label htmlFor="composting" className="text-sm">I compost food waste</label>
             </div>
             <div className="flex items-center gap-3">
-              <input type="checkbox" checked={formData.waste.reusable_water_bottle} onChange={(e) => updateField('waste', 'reusable_water_bottle', e.target.checked)} className="accent-brand-500 w-4 h-4" />
-              <label className="text-sm">I use a reusable water bottle</label>
+              <input id="reusable-bottle" type="checkbox" checked={formData.waste.reusable_water_bottle} onChange={(e) => updateField('waste', 'reusable_water_bottle', e.target.checked)} className="accent-brand-500 w-4 h-4" />
+              <label htmlFor="reusable-bottle" className="text-sm">I use a reusable water bottle</label>
             </div>
           </>
         )}

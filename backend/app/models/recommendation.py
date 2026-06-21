@@ -57,8 +57,8 @@ class Recommendation(Base):
     # Metadata
     source = Column(String(50), default="ai_generated")  # ai_generated, curated, community
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     user = relationship("User", back_populates="recommendations")
@@ -83,7 +83,7 @@ class RecommendationAction(Base):
     actual_co2_saved_kg = Column(Numeric(10, 2), nullable=True)
     actual_cost_impact = Column(Numeric(10, 2), nullable=True)
 
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     recommendation = relationship("Recommendation", back_populates="actions")

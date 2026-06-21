@@ -34,6 +34,7 @@ POINT_VALUES = {
     "article_read": 15,
     "streak_day": 5,
     "first_calculation": 100,
+    "badge_unlocked": 50,
 }
 
 # Level thresholds
@@ -49,9 +50,13 @@ class GamificationService:
 
     # ── Points ───────────────────────────────────────────────────
 
-    async def award_points(self, user_id: UUID, action: str, multiplier: float = 1.0) -> int:
+    async def award_points(self, user_id: UUID, action: str, multiplier: float = 1.0, points_override: Optional[int] = None) -> int:
         """Award points for an action and check level up."""
-        points = int(POINT_VALUES.get(action, 0) * multiplier)
+        if points_override is not None:
+            points = int(points_override * multiplier)
+        else:
+            points = int(POINT_VALUES.get(action, 0) * multiplier)
+            
         if points == 0:
             return 0
 
@@ -171,7 +176,7 @@ class GamificationService:
             progress=100,
         )
         self.db.add(achievement)
-        await self.award_points(user_id, "first_calculation")
+        await self.award_points(user_id, "badge_unlocked", points_override=badge.points_awarded)
         await self.db.flush()
 
         return {"badge": badge.display_name, "points": badge.points_awarded}

@@ -8,7 +8,7 @@ from typing import List, Optional
 from uuid import UUID
 
 import anthropic
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -82,6 +82,20 @@ class RecommendationService:
             "grade": footprint.grade,
             "breakdown": footprint.breakdown,
         }
+
+        # Mark previous pending recommendations as inactive
+        try:
+            await self.db.execute(
+                update(Recommendation)
+                .where(
+                    Recommendation.user_id == user_id,
+                    Recommendation.status == "pending",
+                    Recommendation.is_active == True,
+                )
+                .values(is_active=False)
+            )
+        except Exception as e:
+            logger.warning(f"Failed to deactivate old pending recommendations: {e}")
 
         try:
             response = await self.client.messages.create(

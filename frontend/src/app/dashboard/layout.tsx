@@ -40,8 +40,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-surface-900 flex">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-500 text-white px-4 py-2 rounded-xl z-50 text-sm font-semibold"
+      >
+        Skip to main content
+      </a>
+
       {/* Sidebar */}
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} flex-shrink-0 border-r border-white/5 bg-surface-800/50 flex flex-col transition-all duration-300`}>
+      <aside
+        role="complementary"
+        aria-label="Dashboard Sidebar"
+        className={`${sidebarOpen ? 'w-64' : 'w-20'} flex-shrink-0 border-r border-white/5 bg-surface-800/50 flex flex-col transition-all duration-300`}
+      >
         {/* Logo */}
         <div className="p-6 flex items-center gap-3">
           <Leaf className="w-8 h-8 text-brand-400 flex-shrink-0" />
@@ -49,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 space-y-1">
+        <nav aria-label="Main Navigation" className="flex-1 px-3 space-y-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -86,7 +97,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
+      <main id="main-content" className="flex-1 overflow-y-auto">
         <div className="max-w-7xl mx-auto p-6 lg:p-8">
           {children}
         </div>

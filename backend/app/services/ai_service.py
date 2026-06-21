@@ -81,20 +81,20 @@ Use these tools proactively to retrieve accurate, live database information and 
 Whenever you suggest a specific recommendation or show the impact of a change, you MUST embed a JSON block in your response to render an interactive visual card.
 Use the following markdown format exactly:
 ```json
-{
+{{
   "type": "InsightCard",
   "title": "Actionable Title",
   "description": "Short description",
   "impact_level": "High",
   "estimated_co2_savings_kg": 25.5,
-  "visualization": {
+  "visualization": {{
     "chart_type": "bar",
     "metric_label": "Transportation Emissions",
     "before_value": 100,
     "after_value": 74.5,
     "unit": "kg CO2"
-  }
-}
+  }}
+}}
 ```
 You can use `chart_type`: "bar", "progress", or "doughnut". Make sure to include this inside ```json ``` tags. You can include normal conversational text before and after the JSON block.
 """
@@ -374,99 +374,104 @@ class AIService:
         conversation_id: Optional[uuid.UUID] = None,
     ) -> AsyncIterator[str]:
         """Stream AI response token by token via SSE, resolving tool calls in a loop."""
-        conversation = await self._get_or_create_conversation(user, conversation_id)
+        from app.core.database import AsyncSessionLocal
 
-        # Save user message
-        user_msg = Message(
-            conversation_id=conversation.id,
-            role="user",
-            content=message,
-        )
-        self.db.add(user_msg)
-        await self.db.flush()
+        async with AsyncSessionLocal() as db:
+            self.db = db
+            conversation = await self._get_or_create_conversation(user, conversation_id)
 
-        context = await self._build_user_context(user, query=message)
-        system = ADVISOR_PROMPT.format(user_context=json.dumps(context, default=str))
+            # Save user message
+            user_msg = Message(
+                conversation_id=conversation.id,
+                role="user",
+                content=message,
+            )
+            db.add(user_msg)
+            await db.flush()
 
-        history = await self._get_history(conversation.id, limit=10)
-        messages = [{"role": m.role, "content": m.content} for m in history]
-        messages.append({"role": "user", "content": message})
+            context = await self._build_user_context(user, query=message)
+            system = ADVISOR_PROMPT.format(user_context=json.dumps(context, default=str))
 
-        loop_count = 0
-        max_loops = 5
-        full_response = ""
-        intent = "general_chat"
+            history = await self._get_history(conversation.id, limit=10)
+            messages = [{"role": m.role, "content": m.content} for m in history]
+            messages.append({"role": "user", "content": message})
 
-        while loop_count < max_loops:
-            try:
-                # Call Anthropic with tools enabled
-                async with self.client.messages.stream(
-                    model=settings.AI_MODEL,
-                    max_tokens=settings.AI_MAX_TOKENS,
-                    temperature=settings.AI_TEMPERATURE,
-                    system=system,
-                    messages=messages,
-                    tools=AGENT_TOOLS
-                ) as stream:
-                    # Stream text tokens directly to the user
-                    async for event in stream:
-                        if event.type == "text":
-                            full_response += event.text
-                            yield f"data: {json.dumps({'type': 'token', 'content': event.text})}\n\n"
-                            
-                    # Retrieve final message once stream completes
-                    final_message = await stream.get_final_message()
-                    
-                    # Inspect if any tool calls are present
-                    tool_use_blocks = [b for b in final_message.content if b.type == "tool_use"]
-                    
-                    if tool_use_blocks:
-                        # Append assistant's message with tool calls
-                        assistant_content = []
-                        for b in final_message.content:
-                            if b.type == "text":
-                                assistant_content.append({"type": "text", "text": b.text})
-                            elif b.type == "tool_use":
-                                assistant_content.append({
-                                    "type": "tool_use",
-                                    "id": b.id,
-                                    "name": b.name,
-                                    "input": b.input
-                                })
-                        messages.append({"role": "assistant", "content": assistant_content})
+            loop_count = 0
+            max_loops = 5
+            full_response = ""
+            intent = "general_chat"
 
-                        # Execute tool calls
-                        tool_results = []
-                        for block in tool_use_blocks:
-                            result_data = await self._execute_tool(user, block.name, block.input)
-                            tool_results.append({
-                                "type": "tool_result",
-                                "tool_use_id": block.id,
-                                "content": json.dumps(result_data, default=str)
-                            })
+            while loop_count < max_loops:
+                try:
+                    # Call Anthropic with tools enabled
+                    async with self.client.messages.stream(
+                        model=settings.AI_MODEL,
+                        max_tokens=settings.AI_MAX_TOKENS,
+                        temperature=settings.AI_TEMPERATURE,
+                        system=system,
+                        messages=messages,
+                        tools=AGENT_TOOLS
+                    ) as stream:
+                        # Stream text tokens directly to the user
+                        async for event in stream:
+                            if event.type == "text":
+                                full_response += event.text
+                                yield f"data: {json.dumps({'type': 'token', 'content': event.text})}\n\n"
+                                
+                        # Retrieve final message once stream completes
+                        final_message = await stream.get_final_message()
                         
-                        messages.append({"role": "user", "content": tool_results})
-                        loop_count += 1
-                        continue
-                    else:
-                        break
-            except Exception as e:
-                logger.error(f"AI streaming error in agent loop: {e}")
-                yield f"data: {json.dumps({'type': 'error', 'content': 'AI service temporarily unavailable'})}\n\n"
-                break
+                        # Inspect if any tool calls are present
+                        tool_use_blocks = [b for b in final_message.content if b.type == "tool_use"]
+                        
+                        if tool_use_blocks:
+                            # Append assistant's message with tool calls
+                            assistant_content = []
+                            for b in final_message.content:
+                                if b.type == "text":
+                                    assistant_content.append({"type": "text", "text": b.text})
+                                elif b.type == "tool_use":
+                                    assistant_content.append({
+                                        "type": "tool_use",
+                                        "id": b.id,
+                                        "name": b.name,
+                                        "input": b.input
+                                    })
+                            messages.append({"role": "assistant", "content": assistant_content})
 
-        # Save final complete assistant message
-        ai_msg = Message(
-            conversation_id=conversation.id,
-            role="assistant",
-            content=full_response,
-            agent_used="advisor",
-        )
-        self.db.add(ai_msg)
-        conversation.message_count += 2
-        await self.db.flush()
+                            # Execute tool calls
+                            tool_results = []
+                            for block in tool_use_blocks:
+                                result_data = await self._execute_tool(user, block.name, block.input)
+                                tool_results.append({
+                                    "type": "tool_result",
+                                    "tool_use_id": block.id,
+                                    "content": json.dumps(result_data, default=str)
+                                })
+                            
+                            messages.append({"role": "user", "content": tool_results})
+                            loop_count += 1
+                            continue
+                        else:
+                            break
+                except Exception as e:
+                    logger.error(f"AI streaming error in agent loop: {e}")
+                    yield f"data: {json.dumps({'type': 'error', 'content': 'AI service temporarily unavailable'})}\n\n"
+                    break
 
-        yield f"data: {json.dumps({'type': 'done', 'conversation_id': str(conversation.id)})}\n\n"
+            # Save final complete assistant message
+            ai_msg = Message(
+                conversation_id=conversation.id,
+                role="assistant",
+                content=full_response,
+                agent_used="advisor",
+            )
+            db.add(ai_msg)
+            conversation.message_count += 2
+            await db.flush()
+            await db.commit()
+
+            yield f"data: {json.dumps({'type': 'done', 'conversation_id': str(conversation.id)})}\n\n"
 
     # ── Tool Executions ──────────────────────────────────────────
 
@@ -639,7 +644,13 @@ class AIService:
             if conv:
                 return conv
 
-        conv = Conversation(user_id=user.id)
+        conv = Conversation(
+            user_id=user.id,
+            status="active",
+            message_count=0,
+            total_tokens_used=0,
+            total_cost=0
+        )
         self.db.add(conv)
         await self.db.flush()
         return conv
