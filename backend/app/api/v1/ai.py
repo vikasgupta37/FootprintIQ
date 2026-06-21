@@ -3,10 +3,9 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
-from app.core.database import get_db
+from app.api.dependencies.services import get_ai_service
 from app.models.user import User
 from app.schemas.schemas import (
     ChatMessageRequest,
@@ -23,9 +22,9 @@ router = APIRouter()
 async def send_message(
     data: ChatMessageRequest,
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: AIService = Depends(get_ai_service),
 ):
-    service = AIService(db)
+    """Process a chat message via the AI advisor."""
     return await service.chat(user, data.message, data.conversation_id)
 
 
@@ -33,9 +32,9 @@ async def send_message(
 async def stream_message(
     data: ChatMessageRequest,
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: AIService = Depends(get_ai_service),
 ):
-    service = AIService(db)
+    """Process a chat message via the AI advisor and stream the response."""
     return StreamingResponse(
         service.stream_chat(user, data.message, data.conversation_id),
         media_type="text/event-stream",
@@ -50,9 +49,9 @@ async def stream_message(
 @router.get("/conversations", response_model=list[ConversationResponse])
 async def get_conversations(
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: AIService = Depends(get_ai_service),
 ):
-    service = AIService(db)
+    """Retrieve user's active conversations."""
     convs = await service.get_conversations(user.id)
     return [ConversationResponse.model_validate(c) for c in convs]
 
@@ -61,8 +60,8 @@ async def get_conversations(
 async def get_messages(
     conversation_id: UUID,
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: AIService = Depends(get_ai_service),
 ):
-    service = AIService(db)
+    """Retrieve messages for a specific conversation."""
     msgs = await service.get_messages(conversation_id, user.id)
     return [MessageResponse.model_validate(m) for m in msgs]

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db, oauth2_scheme
+from app.api.dependencies.services import get_user_service
 from app.core.cache import cache
 from app.core.security import verify_access_token
 from app.schemas.schemas import (
@@ -18,8 +19,11 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=dict, status_code=201)
-async def register(data: UserRegister, db: AsyncSession = Depends(get_db)):
-    service = UserService(db)
+async def register(
+    data: UserRegister,
+    service: UserService = Depends(get_user_service),
+):
+    """Register a new user account."""
     user, tokens = await service.register(data)
     return {
         "user": UserProfile.model_validate(user).model_dump(),
@@ -28,8 +32,11 @@ async def register(data: UserRegister, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=dict)
-async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
-    service = UserService(db)
+async def login(
+    data: UserLogin,
+    service: UserService = Depends(get_user_service),
+):
+    """Log in an existing user."""
     user, tokens = await service.login(data.email, data.password)
     return {
         "user": UserProfile.model_validate(user).model_dump(),
@@ -38,8 +45,11 @@ async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/oauth/google", response_model=dict)
-async def google_oauth(data: GoogleOAuthRequest, db: AsyncSession = Depends(get_db)):
-    service = UserService(db)
+async def google_oauth(
+    data: GoogleOAuthRequest,
+    service: UserService = Depends(get_user_service),
+):
+    """Authenticate via Google OAuth."""
     user, tokens = await service.google_oauth(data.code, data.redirect_uri)
     return {
         "user": UserProfile.model_validate(user).model_dump(),
@@ -48,13 +58,17 @@ async def google_oauth(data: GoogleOAuthRequest, db: AsyncSession = Depends(get_
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh_token(data: RefreshTokenRequest, db: AsyncSession = Depends(get_db)):
-    service = UserService(db)
+async def refresh_token(
+    data: RefreshTokenRequest,
+    service: UserService = Depends(get_user_service),
+):
+    """Refresh authentication tokens."""
     return await service.refresh_tokens(data.refresh_token)
 
 
 @router.post("/logout")
 async def logout(token: str = Depends(oauth2_scheme)):
+    """Log out user and invalidate current token."""
     if token:
         try:
             payload = verify_access_token(token)
@@ -67,6 +81,5 @@ async def logout(token: str = Depends(oauth2_scheme)):
                     if ttl > 0:
                         await cache.set(f"blacklist:{token}", "1", ttl=ttl)
         except Exception:
-            # Fallback gracefully if cache operations fail
             pass
     return {"message": "Logged out successfully"}

@@ -1,10 +1,9 @@
 """Eco Twin API — scenario simulation."""
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
-from app.core.database import get_db
+from app.api.dependencies.services import get_ecotwin_service
 from app.models.user import User
 from app.schemas.schemas import SimulationRequest, SimulationResponse
 from app.services.ecotwin_service import EcoTwinService
@@ -16,22 +15,23 @@ router = APIRouter()
 async def run_simulation(
     data: SimulationRequest,
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: EcoTwinService = Depends(get_ecotwin_service),
 ):
-    service = EcoTwinService(db)
+    """Run an Eco Twin simulation based on requested changes."""
     return await service.simulate(user.id, data)
 
 
 @router.get("/simulations")
 async def get_simulations(
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: EcoTwinService = Depends(get_ecotwin_service),
 ):
-    service = EcoTwinService(db)
+    """Retrieve history of previous simulations."""
     sims = await service.get_simulations(user.id)
     return {"data": [{"id": str(s.id), "scenario_name": s.simulation_name, "reduction_percentage": float(s.reduction_percentage), "created_at": s.created_at.isoformat()} for s in sims]}
 
 
 @router.get("/scenarios")
 async def get_prebuilt_scenarios():
+    """Get predefined scenario options for simulations."""
     return {"scenarios": EcoTwinService.get_prebuilt_scenarios()}

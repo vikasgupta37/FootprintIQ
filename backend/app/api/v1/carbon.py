@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
-from app.core.database import get_db
+from app.api.dependencies.services import get_carbon_service
 from app.models.user import User
 from app.schemas.schemas import (
     CarbonCalculateRequest,
@@ -22,9 +22,9 @@ router = APIRouter()
 async def calculate_footprint(
     data: CarbonCalculateRequest,
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: CarbonService = Depends(get_carbon_service),
 ):
-    service = CarbonService(db)
+    """Calculate and save a new carbon footprint entry."""
     return await service.calculate_footprint(user.id, data)
 
 
@@ -32,9 +32,9 @@ async def calculate_footprint(
 async def get_footprint_history(
     limit: int = 12,
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: CarbonService = Depends(get_carbon_service),
 ):
-    service = CarbonService(db)
+    """Retrieve historical footprint calculations."""
     footprints = await service.get_history(user.id, limit)
     return [CarbonHistoryItem.model_validate(fp) for fp in footprints]
 
@@ -43,9 +43,9 @@ async def get_footprint_history(
 async def get_footprint(
     footprint_id: UUID,
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: CarbonService = Depends(get_carbon_service),
 ):
-    service = CarbonService(db)
+    """Retrieve a specific footprint entry by ID."""
     fp = await service.get_footprint(footprint_id, user.id)
     return fp
 
@@ -53,7 +53,7 @@ async def get_footprint(
 @router.get("/trends")
 async def get_trends(
     user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    service: CarbonService = Depends(get_carbon_service),
 ):
-    service = CarbonService(db)
+    """Get month-over-month footprint trends and statistics."""
     return await service.get_trends(user.id)

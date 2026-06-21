@@ -22,27 +22,7 @@ from app.models.gamification import (
 from app.models.user import User
 from app.schemas.schemas import PointsResponse
 
-
-# Points for actions
-POINT_VALUES = {
-    "calculation": 50,
-    "ai_chat": 10,
-    "recommendation_accepted": 25,
-    "recommendation_completed": 100,
-    "challenge_completed": 200,
-    "quiz_completed": 50,
-    "article_read": 15,
-    "streak_day": 5,
-    "first_calculation": 100,
-    "badge_unlocked": 50,
-}
-
-# Level thresholds
-LEVEL_THRESHOLDS = [
-    0, 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5200,
-    6500, 8000, 10000, 12500, 15000, 18000, 22000, 27000, 33000, 40000,
-]
-
+from app.core.constants import POINT_VALUES, LEVEL_THRESHOLDS
 
 class GamificationService:
     def __init__(self, db: AsyncSession):
